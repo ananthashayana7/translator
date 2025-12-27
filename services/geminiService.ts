@@ -1,6 +1,6 @@
+
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 
-// Updated: Strictly use process.env.API_KEY directly as per guidelines
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const translateText = async (text: string, onChunk?: (chunk: string) => void): Promise<string> => {
@@ -23,7 +23,6 @@ export const translateText = async (text: string, onChunk?: (chunk: string) => v
 
       let fullText = '';
       for await (const chunk of responseStream) {
-        // Correct: Access .text property directly
         const chunkText = (chunk as GenerateContentResponse).text || '';
         fullText += chunkText;
         onChunk(chunkText);
@@ -35,7 +34,6 @@ export const translateText = async (text: string, onChunk?: (chunk: string) => v
         contents: text,
         config: { systemInstruction }
       });
-      // Correct: Access .text property directly
       return response.text || '';
     }
   } catch (error) {
@@ -46,12 +44,17 @@ export const translateText = async (text: string, onChunk?: (chunk: string) => v
 
 export const translateDocumentContent = async (content: string): Promise<string> => {
   const model = 'gemini-3-pro-preview';
-  const systemInstruction = `You are an expert document formatter and translator. 
-  Translate the following German document into English. 
-  CRITICAL: You MUST maintain the EXACT alignment, spacing, and hierarchy of the original text. 
-  Use Markdown to represent structural elements like bolding, tables (if text-based), and lists.
-  Ensure headers are clearly defined.
-  The output should be clean, professional, and ready for high-quality printing.`;
+  const systemInstruction = `You are an expert Document Architect and Translator. 
+  Your goal is to translate a German document into English while maintaining a "Visual Mirror" of the original layout.
+  
+  RULES:
+  1. PHYSICAL ALIGNMENT: Use whitespace, tabs, and line breaks to mimic the original document's spatial arrangement.
+  2. HEADERS: Use Markdown headers (# ## ###) that correspond to the visual weight of the original headers.
+  3. LISTS/TABLES: Preserve every bullet point and table structure exactly.
+  4. TERMINOLOGY: Use high-level professional English (e.g., in business or legal contexts).
+  5. NO METADATA: Do not add any "Translated by" or "Page X" notes unless they were in the source.
+  
+  The result must look clean, professional, and ready for official submission.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -59,10 +62,10 @@ export const translateDocumentContent = async (content: string): Promise<string>
       contents: content,
       config: { 
         systemInstruction,
-        temperature: 0.2 // Lower temperature for more consistent formatting
+        temperature: 0.1, // Near-zero temperature for maximum structural consistency
+        thinkingConfig: { thinkingBudget: 1000 } // Reserve tokens for layout reasoning
       }
     });
-    // Correct: Access .text property directly
     return response.text || '';
   } catch (error) {
     console.error("Document translation error:", error);
