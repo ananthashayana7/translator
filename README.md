@@ -1,4 +1,6 @@
 German to English Document Translator
+
+
 📖 Overview
 This project is designed to provide a user‑friendly application for translating documents and text from German to English. While the initial prototype was built using a Python script, the output often suffered from poor text alignment and felt naive. To improve usability and accessibility, this app introduces a clean, tech‑savvy interface that colleagues can easily use for their translation needs.
 
