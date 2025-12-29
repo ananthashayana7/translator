@@ -10,26 +10,7 @@ declare const window: any;
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<AppMode>(AppMode.TEXT);
-  const [hasKey, setHasKey] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const checkKey = async () => {
-      if (window.aistudio?.hasSelectedApiKey) {
-        const selected = await window.aistudio.hasSelectedApiKey();
-        setHasKey(selected);
-      } else {
-        setHasKey(true); // Fallback for environments without the selection utility
-      }
-    };
-    checkKey();
-  }, []);
-
-  const handleOpenKeySelector = async () => {
-    if (window.aistudio?.openSelectKey) {
-      await window.aistudio.openSelectKey();
-      setHasKey(true); // Assume success per guidelines
-    }
-  };
+  const [hasKey, setHasKey] = useState<boolean>(true);
 
   if (hasKey === false) {
     return (
@@ -47,7 +28,6 @@ const App: React.FC = () => {
           </p>
           <div className="space-y-3">
             <button 
-              onClick={handleOpenKeySelector}
               className="w-full py-4 bg-amber-500 text-slate-950 font-bold uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
             >
               Select API Key
