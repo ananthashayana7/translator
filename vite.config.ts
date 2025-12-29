@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
-    const base = mode === 'production' ? '/de-en-doctrans-pro/' : '/';
+    const base = mode === 'production' ? '/translator/' : '/';
     return {
       base,
       build: {
