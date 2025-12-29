@@ -1,8 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocTransPro - Free German to English Translator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.292.0"
+  }
+}
+</script>
+</head>
+<body class="bg-slate-950">
+<div id="root"></div>
+<script type="text/babel" data-type="module" data-presets="react">
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, Shield, FileText, Github, X, Lock, Cpu, Copy, Eraser, ChevronRight, AlertCircle, Type, Upload, CheckCircle2, Loader2, FileUp, Printer } from 'lucide-react';
+import { createRoot } from 'react-dom/client';
+import { Terminal, Shield, FileText, Github, X, Lock, Cpu, Copy, Eraser, ChevronRight, Type, CheckCircle2, Loader2, FileUp, Printer } from 'lucide-react';
 
 // Translation dictionaries and basic translation logic
-const germanToEnglishDict: { [key: string]: string } = {
+const germanToEnglishDict = {
   // Common words
   'hallo': 'hello', 'welt': 'world', 'ich': 'I', 'bin': 'am', 'ist': 'is', 'sind': 'are',
   'der': 'the', 'die': 'the', 'das': 'the', 'und': 'and', 'oder': 'or', 'aber': 'but',
@@ -30,12 +52,12 @@ const germanToEnglishDict: { [key: string]: string } = {
   'entschuldigung': 'excuse me', 'vielen dank': 'many thanks',
 };
 
-const translateWord = (word: string): string => {
+const translateWord = (word) => {
   const lower = word.toLowerCase();
   return germanToEnglishDict[lower] || word;
 };
 
-const simpleTranslate = (text: string): string => {
+const simpleTranslate = (text) => {
   const sentences = text.split(/([.!?])/);
   
   return sentences.map(sentence => {
@@ -50,7 +72,7 @@ const simpleTranslate = (text: string): string => {
 };
 
 // Sparkles Icon Component
-const Sparkles = ({ size }: { size: number }) => (
+const Sparkles = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
     <path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" />
@@ -58,13 +80,13 @@ const Sparkles = ({ size }: { size: number }) => (
 );
 
 // Translation Window Component
-const TranslationWindow: React.FC = () => {
+const TranslationWindow = () => {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
-  const debounceTimer = useRef<any>(null);
+  const debounceTimer = useRef(null);
 
-  const handleTranslate = async (text: string) => {
+  const handleTranslate = async (text) => {
     if (!text.trim()) {
       setOutput('');
       return;
@@ -78,7 +100,7 @@ const TranslationWindow: React.FC = () => {
     setIsTranslating(false);
   };
 
-  const onInputChange = (val: string) => {
+  const onInputChange = (val) => {
     setInput(val);
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
@@ -166,15 +188,15 @@ const TranslationWindow: React.FC = () => {
 };
 
 // Document Processor Component
-const DocumentProcessor: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
+const DocumentProcessor = () => {
+  const [file, setFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [translatedDoc, setTranslatedDoc] = useState<string | null>(null);
-  const [logs, setLogs] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const logEndRef = useRef<HTMLDivElement>(null);
+  const [translatedDoc, setTranslatedDoc] = useState(null);
+  const [logs, setLogs] = useState([]);
+  const fileInputRef = useRef(null);
+  const logEndRef = useRef(null);
 
-  const addLog = (msg: string) => {
+  const addLog = (msg) => {
     setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
   };
 
@@ -182,7 +204,7 @@ const DocumentProcessor: React.FC = () => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e) => {
     const selected = e.target.files?.[0];
     if (selected) {
       setFile(selected);
@@ -240,7 +262,7 @@ const DocumentProcessor: React.FC = () => {
                 {file ? file.name : "Select German Source"}
               </h3>
               <p className="text-xs text-slate-500 mono uppercase tracking-widest">
-                TXT - SECURE UPLOAD
+                TXT • SECURE UPLOAD
               </p>
             </div>
             
@@ -299,6 +321,28 @@ const DocumentProcessor: React.FC = () => {
       )}
 
       <style>{`
+        .mono { font-family: 'Courier New', monospace; }
+        .retro-border { border: 2px solid #334155; }
+        .retro-btn { 
+          transition: all 0.2s;
+        }
+        .retro-btn:hover:not(:disabled) {
+          transform: translate(2px, 2px);
+          box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
+        }
+        @media print {
+          .no-print { display: none !important; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
         @keyframes scan {
           0% { top: 0; }
           100% { top: 100%; }
@@ -318,9 +362,9 @@ const DocumentProcessor: React.FC = () => {
 };
 
 // Main App Component
-const App: React.FC = () => {
-  const [mode, setMode] = useState<'text' | 'document'>('text');
-  const [activeModal, setActiveModal] = useState<'security' | 'source' | null>(null);
+const App = () => {
+  const [mode, setMode] = useState('text');
+  const [activeModal, setActiveModal] = useState(null);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-slate-950 text-slate-100">
@@ -396,7 +440,7 @@ const App: React.FC = () => {
                     Live <span className="text-amber-500 underline decoration-2 underline-offset-4">Translation</span>
                   </h2>
                   <p className="text-xs text-slate-500 mono uppercase tracking-widest">
-                    Real-time DE-EN stream - Completely Free - No API Required
+                    Real-time DE-EN stream • Completely Free • No API Required
                   </p>
                 </div>
                 <TranslationWindow />
@@ -408,7 +452,7 @@ const App: React.FC = () => {
                     Document <span className="text-amber-500">Pipeline</span>
                   </h2>
                   <p className="text-xs text-slate-500 mono uppercase tracking-widest">
-                    Upload and Translate - Privacy First - Zero Storage
+                    Upload and Translate • Privacy First • Zero Storage
                   </p>
                 </div>
                 <DocumentProcessor />
@@ -493,7 +537,7 @@ const App: React.FC = () => {
 
       <footer className="relative z-10 border-t-2 border-slate-800 bg-slate-900/50 p-4 no-print">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-[10px] mono text-slate-500 uppercase font-bold tracking-widest">
-          <p>© 2024 DOCTRANSPRO - FREE AND OPEN</p>
+          <p>© 2024 DOCTRANSPRO • FREE AND OPEN</p>
           <div className="flex gap-4">
             <span>COST: $0.00</span>
             <span>PRIVACY: 100%</span>
@@ -503,21 +547,4 @@ const App: React.FC = () => {
       </footer>
 
       <style>{`
-        .mono { font-family: 'Courier New', monospace; }
-        .retro-border { border: 2px solid #334155; }
-        .retro-btn { 
-          transition: all 0.2s;
-        }
-        .retro-btn:hover:not(:disabled) {
-          transform: translate(2px, 2px);
-          box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
-        }
-        @media print {
-          .no-print { display: none !important; }
-        }
-      `}</style>
-    </div>
-  );
-};
-
-export default App;
+        .no-print { display: none !important; }
